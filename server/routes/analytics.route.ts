@@ -7,43 +7,43 @@ import {
 } from "../controllers/analytics.controller";
 import { updateAccessToken } from "../controllers/user.controller";
 const analyticsRouter = express.Router();
-// analyticsRouter.get(
-//   "/get-users-analytics",
-//   updateAccessToken,
-//   isAuthenticated,
-//   authorizeRoles("admin"),
-//   getUserAnalytics,
-// );
 analyticsRouter.get(
   "/get-users-analytics",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getUserAnalytics,
 );
 // analyticsRouter.get(
-//   "/get-course-analytics",
-//   updateAccessToken,
+//   "/get-users-analytics",
 //   isAuthenticated,
 //   authorizeRoles("admin"),
-//   getCourseAnalytics,
+//   getUserAnalytics,
 // );
 analyticsRouter.get(
   "/get-course-analytics",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getCourseAnalytics,
 );
 // analyticsRouter.get(
-//   "/get-order-analytics",
-//   updateAccessToken,
+//   "/get-course-analytics",
 //   isAuthenticated,
 //   authorizeRoles("admin"),
-//   getOrderAnalytics,
+//   getCourseAnalytics,
 // );
 analyticsRouter.get(
   "/get-order-analytics",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getOrderAnalytics,
 );
+// analyticsRouter.get(
+//   "/get-order-analytics",
+//   isAuthenticated,
+//   authorizeRoles("admin"),
+//   getOrderAnalytics,
+// );
 export default analyticsRouter;

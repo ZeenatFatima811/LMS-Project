@@ -7,19 +7,19 @@ import {
 } from "../controllers/layout.controller";
 import { updateAccessToken } from "../controllers/user.controller";
 const layoutRouter = express.Router();
-// layoutRouter.post(
-//   "/create-layout",
-//   updateAccessToken,
-//   isAuthenticated,
-//   authorizeRoles("admin"),
-//   createLayout,
-// );
 layoutRouter.post(
   "/create-layout",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   createLayout,
 );
+// layoutRouter.post(
+//   "/create-layout",
+//   isAuthenticated,
+//   authorizeRoles("admin"),
+//   createLayout,
+// );
 layoutRouter.put(
   "/edit-layout",
   updateAccessToken,

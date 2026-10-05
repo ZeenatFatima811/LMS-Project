@@ -57,7 +57,7 @@ export const registerationUser = catchAsyncErrors(
         res.status(201).json({
           success: true,
           message: `Please check your emial ${user.email} to activate your account`,
-          activationtoken: activationtoken.token,
+          activationToken: activationtoken.token,
         });
       } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
@@ -72,7 +72,7 @@ interface IActivationToken {
   activationtoken: String;
 }
 export const createActivationToken = (user: any) => {
-  const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
   const token = jwt.sign(
     {
@@ -202,11 +202,11 @@ export const updateAccessToken = catchAsyncErrors(
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refresh_Token, refreshTokenOptions);
       await redis.set(user._id, JSON.stringify(user), "EX", 604800);
-      //next();
-      res.status(200).json({
-        success: true,
-        accessToken,
-      });
+      next();
+      // res.status(200).json({
+      //   success: true,
+      //   accessToken,
+      // });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -254,20 +254,12 @@ interface IUpdatUserBody {
 export const updateUserInfo = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, email } = req.body as IUpdatUserBody;
+      const { name } = req.body as IUpdatUserBody;
       const userId = req.user?._id;
       if (!userId) {
         return next(new Error("User ID is undefined"));
       }
-      const user = await userModel.findById(userId);
-
-      if (email && user) {
-        const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist) {
-          return next(new ErrorHandler("Email already exist", 400));
-        }
-        user.email = email;
-      }
+      const user = await userModel.findById(userId);  
 
       if (name && user) {
         user.name = name;

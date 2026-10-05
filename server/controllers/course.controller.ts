@@ -106,23 +106,22 @@ export const getSingleCourse = catchAsyncErrors(
 export const getAllCourses = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      
-        const isCacheExits = await redis.get("allCourses");
-        if (isCacheExits) {
-          const course = JSON.parse(isCacheExits);
-          res.status(200).json({
-            success: true,
-            course,
-          });
-        } else {
-          const courses = await CourseModel.find().select(
-            "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links",
-          );
-          await redis.set("allCourses", JSON.stringify(courses));
-      res.status(200).json({
-        success: true,
-        courses,
-      });
+      const isCacheExits = await redis.get("allCourses");
+      if (isCacheExits) {
+        const course = JSON.parse(isCacheExits);
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      } else {
+        const courses = await CourseModel.find().select(
+          "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links",
+        );
+        await redis.set("allCourses", JSON.stringify(courses));
+        res.status(200).json({
+          success: true,
+          courses,
+        });
       }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -383,11 +382,19 @@ export const deleteCourse = catchAsyncErrors(
     try {
       const id = req.params.id as string;
       const course = await CourseModel.findById(id);
+
       if (!course) {
         return next(new ErrorHandler("Course not found", 400));
       }
-      await course.deleteOne({ id });
+
+      await course.deleteOne();
+
+      // Delete individual course cache
       await redis.del(id);
+
+      // Delete all courses cache
+      await redis.del("allCourses");
+
       res.status(201).json({
         success: true,
         message: "Course deleted successfully.",
