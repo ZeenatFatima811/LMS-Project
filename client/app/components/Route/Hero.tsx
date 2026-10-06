@@ -6,12 +6,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BiSearch } from "react-icons/bi";
+import Loader from "../Loader/Loader";
 
 const Hero = () => {
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const { data, refetch } = useGetHeroDataQuery("Banner", {});
+  const { data, isLoading, refetch } = useGetHeroDataQuery("Banner", {});
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +24,12 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-[#0a0f1d] px-4 py-16 lg:px-12 transition-colors duration-300">
+    <>
+    {
+      isLoading ? (
+        <Loader/>
+      ) : (
+        <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-[#0a0f1d] px-4 py-16 lg:px-12 transition-colors duration-300">
       <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
         
         {/* Left Side: Hero Image Section */}
@@ -117,6 +123,9 @@ const Hero = () => {
 
       </div>
     </section>
+      )
+    }
+    </>
   );
 };
 

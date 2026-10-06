@@ -21,8 +21,8 @@ import { BiMessage } from "react-icons/bi";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { format } from "timeago.js";
 import socketIO from "socket.io-client";
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URI || "";
-const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URL || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 type Props = {
   data: any;
   id: string;
@@ -106,8 +106,8 @@ const CourseContentMedia: FC<Props> = ({
       setQuestion("");
       refetch();
       toast.success("Questiton Added SuccessFully!");
-      socket.emit("notification", {
-        title: "New Question Recived!",
+      socketId.emit("notification", {
+        title: "New Question Recieved!",
         message: `You Have A New Questiton In ${data[activeVideo].title}`,
         userId: user?._id,
       });
@@ -124,7 +124,7 @@ const CourseContentMedia: FC<Props> = ({
       refetch();
       toast.success("Answer Added Successfully!");
       if (user.role !== "admin") {
-        socket.emit("notification", {
+        socketId.emit("notification", {
           title: "New Reply Recived!",
           message: `You Have A New Questiton Reply In  ${data[activeVideo].title}`,
           userId: user?._id,
@@ -143,7 +143,7 @@ const CourseContentMedia: FC<Props> = ({
       setRating(1);
       courseRefetch();
       toast.success("Review Added SuccessFully!");
-      socket.emit("notification", {
+      socketId.emit("notification", {
         title: "A New FeedBack Recived!",
         message: `You Have A New Feedback In ${data[activeVideo].title}`,
         userId: user?._id,

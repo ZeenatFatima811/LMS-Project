@@ -11,8 +11,8 @@ import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import socketIO from "socket.io-client";
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URI || "";
-const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URL || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
   setOpen: any;
@@ -51,7 +51,7 @@ const CheckOutForm = ({ data, user,refetch }: Props) => {
   useEffect(() => {
     if (orderData) {
       refetch();
-      socket.emit("notification", {
+      socketId.emit("notification", {
         title: "New Order",
         message: `You Have A New Order From ${data?.name}`,
         userId: user?._id,

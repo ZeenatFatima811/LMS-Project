@@ -79,6 +79,8 @@ export const createOrder = catchAsyncErrors(
       await user?.save();
       course.purchased = (course.purchased || 0) + 1;
       await course.save();
+      await redis.del(course._id.toString());
+      await redis.del("allCourses");
       await NotificationModel.create({
         userId: user?._id,
         title: "New Order",

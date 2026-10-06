@@ -120,7 +120,7 @@ export const getAllCourses = catchAsyncErrors(
         await redis.set("allCourses", JSON.stringify(courses));
         res.status(200).json({
           success: true,
-          courses,
+          course: courses,
         });
       }
     } catch (error: any) {

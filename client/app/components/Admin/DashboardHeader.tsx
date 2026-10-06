@@ -1,27 +1,27 @@
-// import {
-//   useGetAllNotificationsQuery,
-//   useUpdateNotificationStatusMutation,
-// } from "@/redux/features/notifications/notificationsApi";
+import {
+  useGetAllNotificationsQuery,
+  useUpdateNotificationStatusMutation,
+} from "../../../redux/features/notifications/notificationApi";
 import { ThemeSwitcher } from "../../utils/ThemeSwitcher";
 import { FC, useEffect, useRef, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
-// import socketIO from "socket.io-client";
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URI || "";
-// const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+import socketIO from "socket.io-client";
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URL || "";
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 type Props = {
   open?: boolean;
   setOpen?: any;
 };
-//import { format } from "timeago.js";
+import { format } from "timeago.js";
 const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
-//   const { data, refetch } = useGetAllNotificationsQuery(undefined, {
-//     refetchOnMountOrArgChange: true,
-//   });
-//   const [
-//     updateNotificationStatus,
-//     { isSuccess },
-//   ] = useUpdateNotificationStatusMutation();
+  const { data, refetch } = useGetAllNotificationsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [
+    updateNotificationStatus,
+    { isSuccess },
+  ] = useUpdateNotificationStatusMutation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -41,28 +41,28 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
   /*
   When notification data is available, store only the unread ones in state.Also, if a notification status was updated successfully, refetch the list. 
   */
-//   useEffect(() => {
-//     if (data) {
-//       setNotifications(
-//         data.notifications.filter((item: any) => item.status === "unread")
-//       );
-//     }
-//     if (isSuccess) {
-//       refetch();
-//     }
-//   }, [data, isSuccess,refetch]);
+  useEffect(() => {
+    if (data) {
+      setNotifications(
+        data.notifications.filter((item: any) => item.status === "unread")
+      );
+    }
+    if (isSuccess) {
+      refetch();
+    }
+  }, [data, isSuccess,refetch]);
 
   /*
 Set up a socket listener for real-time "newNotification" events from the server. When a new notification arrives, it refetches the notification list and plays a sound.
 */
-//   useEffect(() => {
-//     socket.on("newNotification", (data) => {
-//       if (data) {
-//         refetch();
-//       }
-//       playNotificationSound();
-//     });
-//   }, []);
+  useEffect(() => {
+    socket.on("newNotification", (data) => {
+      if (data) {
+        refetch();
+      }
+      playNotificationSound();
+    });
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -84,56 +84,71 @@ Set up a socket listener for real-time "newNotification" events from the server.
   }, [open, setOpen]);
 
   const handleNotificationStatusChange = async (id: string) => {
-    //await updateNotificationStatus(id);
+    await updateNotificationStatus(id);
   };
   return (
-    <div className="w-full flex items-center justify-end p-6 fixed top-5 right-0">
+    <div className="fixed right-0 top-5 z-50 flex w-full items-center justify-end p-6">
       <ThemeSwitcher />
       {/* Notification bell icon */}
       <div
-        className="relative cursor-pointer m-2"
-        onClick={() => setOpen(!open)}
+        className="relative m-2"
+        ref={dropdownRef}
       >
-        <IoMdNotificationsOutline className="text-2xl cursor-pointer text-black dark:text-white" />
-        <span className="absolute -top-2 -right-2 bg-[#3ccba0] rounded-full w-5 h-5 text-[12px] flex items-center justify-center text-white">
-          {notifications && notifications.length}
-        </span>
-      </div>
-      {/* Notification dropdown - shown only if `open` is true */}
-      {open && (
-        <div
-          className="w-[350px] h-[50vh] dark:bg-[#111C43] bg-white shadow-xl absolute top-16 z-10 rounded"
-          ref={dropdownRef}
+        <button
+          type="button"
+          aria-label="Notifications"
+          aria-expanded={open}
+          className="relative flex cursor-pointer items-center justify-center text-black dark:text-white"
+          onClick={() => setOpen(!open)}
         >
-          {/* Header */}
-          <h5 className="text-center text-[20px] font-Poppins text-black dark:text-white p-3">
-            Notifications
-          </h5>
-          {notifications &&
-            notifications.map((item: any, index: number) => (
-              <div
-                key={index}
-                className="dark:bg-[#2d3a4ea1] bg-[#00000013] font-Poppins border-b dark:border-b-[#ffffff47] border-b-[#0000000f]"
-              >
-                <div className="w-full flex items-center justify-between p-2">
-                  <p className="text-black dark:text-white">{item.title}</p>
-                  <p
-                    className="text-black dark:text-white cursor-pointer"
-                    onClick={() => handleNotificationStatusChange(item._id)}
+          <IoMdNotificationsOutline className="text-2xl" />
+          <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3ccba0] px-1 text-[12px] text-white">
+            {notifications.length}
+          </span>
+        </button>
+        {open && (
+          <div
+            className="absolute right-0 top-full z-50 mt-3 flex max-h-[70vh] w-[350px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-[#111C43]"
+          >
+            <h5 className="shrink-0 border-b border-gray-200 px-4 py-3 text-center font-Poppins text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
+              Notifications
+            </h5>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {notifications.length > 0 ? (
+                notifications.map((item: any, index: number) => (
+                  <div
+                    key={item._id || index}
+                    className="border-b border-gray-200 px-4 py-3 font-Poppins last:border-b-0 dark:border-gray-700"
                   >
-                    Mark as read
-                  </p>
-                </div>
-                <p className="px-2 text-black dark:text-white">
-                  {item.message}
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="min-w-0 flex-1 break-words text-sm font-semibold text-gray-900 dark:text-white">
+                        {item.title}
+                      </p>
+                      <button
+                        type="button"
+                        className="shrink-0 text-xs font-medium text-blue-600 hover:underline dark:text-blue-300"
+                        onClick={() => handleNotificationStatusChange(item._id)}
+                      >
+                        Mark as read
+                      </button>
+                    </div>
+                    <p className="mt-1 break-words text-sm text-gray-700 dark:text-gray-200">
+                      {item.message}
+                    </p>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      {format(item.createdAt)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                  No new notifications
                 </p>
-                <p className="p-2 text-black dark:text-white text-[14px]">
-                  {/* {format(item.createdAt)} */}
-                </p>
-              </div>
-            ))}
-        </div>
-      )}
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
