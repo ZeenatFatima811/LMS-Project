@@ -78,23 +78,24 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
       return;
     }
 
-    const usersLastTwoMonths = usersLast12Months.slice(-2);
-    const ordersLastTwoMonths = ordersLast12Months.slice(-2);
-
-    const usersCurrentMonth = usersLastTwoMonths[1]?.count ?? 0;
-    const usersPreviousMonth = usersLastTwoMonths[0]?.count ?? 0;
-    const ordersCurrentMonth = ordersLastTwoMonths[1]?.count ?? 0;
-    const ordersPreviousMonth = ordersLastTwoMonths[0]?.count ?? 0;
+    const usersCurrentMonth = usersLast12Months[0]?.count ?? 0;
+    const usersPreviousMonth = usersLast12Months[1]?.count ?? 0;
+    const ordersCurrentMonth = ordersLast12Months[0]?.count ?? 0;
+    const ordersPreviousMonth = ordersLast12Months[1]?.count ?? 0;
 
     const usersPercentChange =
       usersPreviousMonth !== 0
         ? ((usersCurrentMonth - usersPreviousMonth) / usersPreviousMonth) * 100
-        : 100;
+        : usersCurrentMonth === 0
+          ? 0
+          : null;
 
     const ordersPercentChange =
       ordersPreviousMonth !== 0
         ? ((ordersCurrentMonth - ordersPreviousMonth) / ordersPreviousMonth) * 100
-        : 100;
+        : ordersCurrentMonth === 0
+          ? 0
+          : null;
 
     setuserComparePercentage({
       currentMonth: usersCurrentMonth,
@@ -111,6 +112,8 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
 
   const ordersPercent = ordersComparePercentage?.percentChange ?? 0;
   const usersPercent = userComparePercentage?.percentChange ?? 0;
+  const ordersPercentIsNew = ordersComparePercentage?.percentChange === null;
+  const usersPercentIsNew = userComparePercentage?.percentChange === null;
 
   return (
     <div className="mt-[30px] min-h-screen">
@@ -128,17 +131,18 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
                   {ordersComparePercentage?.currentMonth}
                 </h5>
                 <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
-                  Sales Obtained
+                  Orders This Month
                 </h5>
               </div>
               <div>
                 <CircularProgressWithLabel
-                  value={ordersPercent > 0 ? 100 : 0}
+                  value={ordersPercentIsNew || ordersPercent > 0 ? 100 : 0}
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {ordersPercent > 0 ? "+" : ""}
-                  {ordersPercent.toFixed(2)} %
+                  {ordersPercentIsNew
+                    ? "New"
+                    : `${ordersPercent > 0 ? "+" : ""}${ordersPercent.toFixed(2)} %`}
                 </h5>
               </div>
             </div>
@@ -157,12 +161,13 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
               </div>
               <div>
                 <CircularProgressWithLabel
-                  value={usersPercent > 0 ? 100 : 0}
+                  value={usersPercentIsNew || usersPercent > 0 ? 100 : 0}
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {usersPercent > 0 ? "+" : ""}
-                  {usersPercent.toFixed(2)} %
+                  {usersPercentIsNew
+                    ? "New"
+                    : `${usersPercent > 0 ? "+" : ""}${usersPercent.toFixed(2)} %`}
                 </h5>
               </div>
             </div>

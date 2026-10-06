@@ -95,7 +95,7 @@ const Footer = () => {
               <li>
                 <Link
                   className="text-base text-black dark:text-gray-300 dark:hover:text-white pb-2"
-                  href="https://github.com/im-Toqeer-506"
+                  href="https://github.com/ZeenatFatima811"
                 >
                   github
                 </Link>
@@ -113,7 +113,7 @@ const Footer = () => {
             </p>
             <Link
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded inline-block"
-              href={`mailto:muhammadtoqeerzia18@gmail.com`}
+              href={`mailto:z8784507@gmail.com`}
             >
               Connect
             </Link>
@@ -121,7 +121,7 @@ const Footer = () => {
         </div>
         <br />
         <p className="text-center text-black dark:text-white">
-          Copyright &copy; 2025 ELearning | All Rights Reserved
+          Copyright &copy; 2026 ELearning | All Rights Reserved
         </p>
       </div>
       <br />

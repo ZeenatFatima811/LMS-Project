@@ -27,7 +27,12 @@ export const uploadCourse = catchAsyncErrors(
           url: myCloud.secure_url,
         };
       }
-      createCourse(data, res, next);
+      const course = await createCourse(data);
+      await redis.del("allCourses");
+      res.status(201).json({
+        success: true,
+        course,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
